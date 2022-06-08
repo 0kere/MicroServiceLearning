@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Date;
 import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
@@ -31,7 +32,7 @@ public class MockitoTest {
     {
         microServiceApp = new MicroServiceLearningApplication(actorRepository, filmRepository, categoryRepository, languageRepository);
     }
-
+    //region Actor Tests
     @Test
     public void getAllActors()
     {
@@ -83,4 +84,135 @@ public class MockitoTest {
         microServiceApp.deleteActor(1);
         Mockito.verify(actorRepository).delete(actor);
     }
+    //endregion
+    //region Film Tests
+    @Test
+    public void getAllFilms()
+    {
+        microServiceApp.getAllFilms();
+        verify(filmRepository).findAll();
+    }
+    @Test void getFilmByID()
+    {
+        Film film = GetTestFilm();
+        Mockito.when(microServiceApp.getFilmWithID(1)).thenReturn(Optional.of(film));
+        Optional<Film> testFilm = microServiceApp.getFilmWithID(1);
+
+        Date release = new Date(2002,1,1);
+        Assertions.assertEquals("Spider-Man",testFilm.get().getTitle());
+        Assertions.assertEquals("Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
+                testFilm.get().getDescription());
+        Assertions.assertEquals(release, testFilm.get().release_year);
+        Assertions.assertEquals(1, testFilm.get().language_id);
+        Assertions.assertEquals(null, testFilm.get().original_language_id);
+        Assertions.assertEquals(0.99f, testFilm.get().rental_rate);
+        Assertions.assertEquals(121, testFilm.get().length);
+        Assertions.assertEquals(20.99f, testFilm.get().replacement_cost);
+        Assertions.assertEquals("PG-13", testFilm.get().rating);
+        Assertions.assertEquals("Deleted Scenes", testFilm.get().special_features);
+    }
+    @Test
+    public void deleteFilm()
+    {
+        final Film film = GetTestFilm();
+        Optional<Film> optionalFilm = Optional.of(film);
+        Mockito.when(filmRepository.findById(1)).thenReturn(optionalFilm);
+        microServiceApp.deleteFilm(1);
+        Mockito.verify(filmRepository).delete(film);
+    }
+    @Test
+    public void addFilm()
+    {
+        Film film = GetTestFilm();
+        String expected = "Saved";
+        String actual = microServiceApp.saveFilm(film);
+
+        ArgumentCaptor<Film> filmArgumentCaptor = ArgumentCaptor.forClass(Film.class);
+
+        verify(filmRepository).save(filmArgumentCaptor.capture());
+
+        filmArgumentCaptor.getValue();
+
+        Assertions.assertEquals(expected, actual, "Actor not added to database");
+    }
+    @Test
+    public void updateFilm()
+    {
+        final Film film = GetTestFilm();
+        Optional<Film> optionalFilm = Optional.of(film);
+        Mockito.when(filmRepository.findById(1)).thenReturn(optionalFilm);
+        Film update = GetTestFilm();
+        String actual = microServiceApp.update(1, update);
+        String expected = "Updated";
+        Assertions.assertEquals(expected, actual, "Film was not updated");
+    }
+    Film GetTestFilm()
+    {
+        Date release = new Date(2002,1,1);
+        return new Film("Spider-Man", "Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
+                release, 1, null, 6, 0.99f, 121, 20.99f, "PG-13", "Deleted Scenes");
+    }
+    //endregion
+    //region Category Tests
+    @Test
+    public void getAllCategories()
+    {
+        microServiceApp.getAllCategories();
+        verify(categoryRepository).findAll();
+    }
+    @Test void getCategoryByID()
+    {
+        Category category = new Category("Muppets");
+        Mockito.when(microServiceApp.getCategoryWithID(1)).thenReturn(Optional.of(category));
+        Optional<Category> testCategory = microServiceApp.getCategoryWithID(1);
+
+        Assertions.assertEquals("Muppets", testCategory.get().getName());
+    }
+    @Test
+    public void newCategory()
+    {
+        Category category = new Category("Muppets");
+        String expected = "Added";
+        String actual = microServiceApp.newCategory("Muppets");
+
+        ArgumentCaptor<Category> categoryArgumentCaptor = ArgumentCaptor.forClass(Category.class);
+
+        verify(categoryRepository).save(categoryArgumentCaptor.capture());
+
+        categoryArgumentCaptor.getValue();
+
+        Assertions.assertEquals(expected, actual, "Category not added to database");
+    }
+    //endregion
+    //region Language Tests
+    @Test
+    public void getAllLanguages()
+    {
+        microServiceApp.getAllLanguages();
+        verify(languageRepository).findAll();
+    }
+    @Test void getLanguageByID()
+    {
+        Language language = new Language("Yoruba");
+        Mockito.when(microServiceApp.getLanguageWithID(1)).thenReturn(Optional.of(language));
+        Optional<Language> testLanguage = microServiceApp.getLanguageWithID(1);
+
+        Assertions.assertEquals("Yoruba", testLanguage.get().getName());
+    }
+    @Test
+    public void newLanguage()
+    {
+        Language language = new Language("Yoruba");
+        String expected = "Added";
+        String actual = microServiceApp.newLanguage("Yoruba");
+
+        ArgumentCaptor<Language> languageArgumentCaptor = ArgumentCaptor.forClass(Language.class);
+
+        verify(languageRepository).save(languageArgumentCaptor.capture());
+
+        languageArgumentCaptor.getValue();
+
+        Assertions.assertEquals(expected, actual, "Language not added to database");
+    }
+    //endregion
 }

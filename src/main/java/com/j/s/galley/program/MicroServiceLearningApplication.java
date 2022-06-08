@@ -146,6 +146,14 @@ public class MicroServiceLearningApplication {
 	{
 		return categoryRepository.findById(categoryID);
 	}
+
+	@PostMapping("/category")
+	String newCategory(@RequestParam String name)
+	{
+		Category c = new Category(name);
+		categoryRepository.save(c);
+		return "Added";
+	}
 	//endregion
 	//region Language mappings
 	@GetMapping("/all_languages")
@@ -160,6 +168,14 @@ public class MicroServiceLearningApplication {
 	Optional<Language> getLanguageWithID(@PathVariable("language_id")int languageID)
 	{
 		return languageRepository.findById(languageID);
+	}
+
+	@PostMapping("/language")
+	String newLanguage(@RequestParam String name)
+	{
+		Language l = new Language(name);
+		languageRepository.save(l);
+		return "Added";
 	}
 	//endregion
 }
