@@ -1,12 +1,10 @@
 package com.j.s.galley.program;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -81,8 +79,9 @@ public class MockitoTest {
         final Actor actor = new Actor("test", "ing");
         Optional<Actor> optionalActor = Optional.of(actor);
         Mockito.when(actorRepository.findById(1)).thenReturn(optionalActor);
-        microServiceApp.deleteActor(1);
+        String actual = microServiceApp.deleteActor(1);
         Mockito.verify(actorRepository).delete(actor);
+        Assertions.assertEquals("Deleted", actual, "Actor not deleted successfully");
     }
     //endregion
     //region Film Tests
