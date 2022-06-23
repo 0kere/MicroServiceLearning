@@ -1,15 +1,18 @@
 package com.j.s.galley.program;
 
-import com.mysql.cj.MysqlType;
 import org.springframework.data.annotation.Id;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name="film")
-public class Film {
+public class Film implements Serializable {
+    @javax.persistence.Id
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     int film_id;
@@ -18,7 +21,7 @@ public class Film {
     String description;
     @Nullable
     java.sql.Date release_year;
-    int language_id;
+//    int language_id;
     @Nullable
     Integer original_language_id;
     int rental_duration;
@@ -31,13 +34,48 @@ public class Film {
     @Nullable
     String special_features;
 
-    public Film(String title, String description, java.sql.Date release_year, int language_id, Integer original_language_id,
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "film_category",
+            joinColumns = @JoinColumn(name="film_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categoryList = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "language_id")
+    private Language language;
+
+    @ManyToMany
+    @JoinTable(name="film_actor", joinColumns = {
+            @JoinColumn(name="film_id", nullable = false)
+    }, inverseJoinColumns = {
+            @JoinColumn(name="actor_id", nullable = false)
+    })
+    Set<Actor> actors;
+//region Failed attempts at relationships.
+// Kept getting a SQLSyntaxErrorException. e.g. for language it was trying to do language.film for some reason. couldnt figure out why this happened
+
+//    @JsonIgnore
+//    public Set<Actor> getActors() {return actors;}
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "film_category",
+//            joinColumns = {
+//                    @JoinColumn(name = "film_id")
+//            },
+//            inverseJoinColumns = {
+//                    @JoinColumn(name="category_id")
+//            }
+//    )
+//    Set<Category> categories = new HashSet<Category>();
+//endregion
+    public Film(String title, String description, java.sql.Date release_year, Language language, Integer original_language_id,
                 int rental_duration, float rental_rate, int length, float replacement_cost, String rating, String special_features)
     {
         this.title = title;
         this.description = description;
         this.release_year = release_year;
-        this.language_id = language_id;
+        this.language = language;
         this.original_language_id = original_language_id;
         this.rental_duration = rental_duration;
         this.rental_rate = rental_rate;
@@ -48,8 +86,17 @@ public class Film {
     }
     public Film(){}
 
+//    public Set<Category> getCategories() {
+//        return categories;
+//    }
+//
+//    public void setCategories(Set<Category> categories) {
+//        this.categories = categories;
+//    }
+
     public String getTitle() {
         return title;
+
     }
 
     public void setTitle(String title) {
@@ -72,12 +119,12 @@ public class Film {
         this.release_year = release_year;
     }
 
-    public int getLanguage_id() {
-        return language_id;
+    public Language getLanguage() {
+        return language;
     }
 
-    public void setLanguage_id(int language_id) {
-        this.language_id = language_id;
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 
     public Integer getOriginal_language_id() {
@@ -134,5 +181,9 @@ public class Film {
 
     public void setSpecial_features(String special_features) {
         this.special_features = special_features;
+    }
+
+    public List<Category> getCategoryList() {
+        return categoryList;
     }
 }

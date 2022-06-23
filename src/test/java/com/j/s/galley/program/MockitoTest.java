@@ -1,21 +1,27 @@
 package com.j.s.galley.program;
 
+import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
 
 import java.sql.Date;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class MockitoTest {
+    @InjectMocks
     private MicroServiceLearningApplication microServiceApp;
     @Mock
     private IActorRepository actorRepository;
@@ -25,11 +31,9 @@ public class MockitoTest {
     ILanguageRepository languageRepository;
     @Mock ICategoryRepository categoryRepository;
 
-    @BeforeEach
-    void setUp()
-    {
-        microServiceApp = new MicroServiceLearningApplication(actorRepository, filmRepository, categoryRepository, languageRepository);
-    }
+    @Rule //Ensures there are no unused stubs or potential stubbing issues e.g. method called without stubbing or incorrect args
+    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     //region Actor Tests
     @Test
     public void getAllActors()
@@ -44,7 +48,7 @@ public class MockitoTest {
         Mockito.when(microServiceApp.getActorWithID(1)).thenReturn(Optional.of(actor));
         Optional<Actor> act = microServiceApp.getActorWithID(1);
 
-        Assertions.assertEquals("Bart",act.get().getFirst_name());
+        Assertions.assertEquals("Bart",act.get().getFirstName());
         Assertions.assertEquals("Simpson",act.get().getLast_name());
     }
     @Test
@@ -52,7 +56,7 @@ public class MockitoTest {
     {
         Actor newActor = new Actor("test", "ing");
         String expected = "Saved";
-        String actual = microServiceApp.saveActor(newActor.getFirst_name(), newActor.getLast_name());
+        String actual = microServiceApp.saveActor(newActor.getFirstName(), newActor.getLast_name());
 
         ArgumentCaptor<Actor> actorArgumentCaptor = ArgumentCaptor.forClass(Actor.class);
 
@@ -78,7 +82,7 @@ public class MockitoTest {
     {
         final Actor actor = new Actor("test", "ing");
         Optional<Actor> optionalActor = Optional.of(actor);
-        Mockito.when(actorRepository.findById(1)).thenReturn(optionalActor);
+        Mockito.when(actorRepository.findById(anyInt())).thenReturn(optionalActor);
         String actual = microServiceApp.deleteActor(1);
         Mockito.verify(actorRepository).delete(actor);
         Assertions.assertEquals("Deleted", actual, "Actor not deleted successfully");
@@ -102,7 +106,7 @@ public class MockitoTest {
         Assertions.assertEquals("Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
                 testFilm.get().getDescription());
         Assertions.assertEquals(release, testFilm.get().release_year);
-        Assertions.assertEquals(1, testFilm.get().language_id);
+        Assertions.assertEquals("English", testFilm.get().getLanguage().getName());
         Assertions.assertEquals(null, testFilm.get().original_language_id);
         Assertions.assertEquals(0.99f, testFilm.get().rental_rate);
         Assertions.assertEquals(121, testFilm.get().length);
@@ -148,8 +152,9 @@ public class MockitoTest {
     Film GetTestFilm()
     {
         Date release = new Date(2002,1,1);
+        Language newLanguage = new Language(0, "English");
         return new Film("Spider-Man", "Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
-                release, 1, null, 6, 0.99f, 121, 20.99f, "PG-13", "Deleted Scenes");
+                release, newLanguage, null, 6, 0.99f, 121, 20.99f, "PG-13", "Deleted Scenes");
     }
     //endregion
     //region Category Tests
@@ -192,7 +197,7 @@ public class MockitoTest {
     }
     @Test void getLanguageByID()
     {
-        Language language = new Language("Yoruba");
+        Language language = new Language(0, "Yoruba");
         Mockito.when(microServiceApp.getLanguageWithID(1)).thenReturn(Optional.of(language));
         Optional<Language> testLanguage = microServiceApp.getLanguageWithID(1);
 
@@ -201,9 +206,9 @@ public class MockitoTest {
     @Test
     public void newLanguage()
     {
-        Language language = new Language("Yoruba");
+        Language language = new Language(1,"Yoruba");
         String expected = "Added";
-        String actual = microServiceApp.newLanguage("Yoruba");
+        String actual = microServiceApp.newLanguage(language);
 
         ArgumentCaptor<Language> languageArgumentCaptor = ArgumentCaptor.forClass(Language.class);
 

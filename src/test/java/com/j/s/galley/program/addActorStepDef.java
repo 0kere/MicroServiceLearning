@@ -5,16 +5,13 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
-public class addActorStepDef {
+public class addActorStepDef{
     //region Create mock service
     private static MicroServiceLearningApplication microServiceApp;
     @Mock
@@ -24,13 +21,13 @@ public class addActorStepDef {
     @Mock
     static ILanguageRepository languageRepository;
     @Mock static ICategoryRepository categoryRepository;
-    //endregion
     @Before
     public static void init()
     {
         actorRepository = mock(IActorRepository.class);
         microServiceApp = new MicroServiceLearningApplication(actorRepository, filmRepository, categoryRepository, languageRepository);
     }
+    //endregion
 
     String first_name, last_name;
     @Given("I have the actors information")
@@ -51,7 +48,7 @@ public class addActorStepDef {
     public void i_get_the_return_string_saved() {
         // Write code here that turns the phrase above into concrete actions
         Assertions.assertEquals("Saved", actual, "Actor details were not saved correctly");
-        Assertions.assertEquals("Peter", actorArgumentCaptor.getValue().getFirst_name());
+        Assertions.assertEquals("Peter", actorArgumentCaptor.getValue().getFirstName());
         Assertions.assertEquals("Parker", actorArgumentCaptor.getValue().getLast_name());
     }
 }

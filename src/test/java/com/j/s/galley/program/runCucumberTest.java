@@ -7,7 +7,8 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin={"pretty"},
     features = "src/test/resources/Cucumber",
-    glue = "com.j.s.galley.program")
+    glue = "com.j.s.galley.program"
+)
 public class runCucumberTest {
 
 }

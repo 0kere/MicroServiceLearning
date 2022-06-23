@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @SpringBootApplication
 @CrossOrigin(origins="*")
@@ -42,9 +42,18 @@ public class MicroServiceLearningApplication {
 	//region Actor mappings
 	@GetMapping("/all_actors")
 	public @ResponseBody
-	Iterable<Actor>getAllActors()
+	List<ActorSearchData>getAllActors()
 	{
-		return actorRepository.findAll();
+		List<Actor> returnData = new ArrayList<Actor>();
+		actorRepository.findAll().forEach(returnData::add);
+		return returnData.stream().map(a -> new ActorSearchData(a.getFirstName(), a.getLast_name(), a.getActor_id())).collect(Collectors.toList());
+	}
+
+	@GetMapping("/actor_search")
+	public @ResponseBody
+	List<ActorSearchData> getActorByName(@RequestParam String name)
+	{
+		return actorRepository.findByFirstNameContaining(name).stream().map(a -> new ActorSearchData(a.getFirstName(), a.getLast_name(), a.getActor_id())).collect(Collectors.toList());
 	}
 
 	@GetMapping("/actor/{actor_id}")
@@ -64,7 +73,7 @@ public class MicroServiceLearningApplication {
 	}
 
 	@PostMapping("/actor")
-	String saveActor(@RequestParam String first_name, @RequestParam String last_name)
+	public String saveActor(@RequestParam String first_name, @RequestParam String last_name)
 	{
 		Actor a = new Actor(first_name, last_name);
 		actorRepository.save(a);
@@ -75,7 +84,7 @@ public class MicroServiceLearningApplication {
 	String update(@PathVariable("actor_id")int id, @RequestBody Actor actor) throws ResourceNotFoundException
 	{
 		Actor update = actorRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Employee not found for this ID :: "+ id) );
-		update.setFirst_name(actor.first_name);
+		update.setFirstName(actor.firstName);
 		update.setLast_name(actor.last_name);
 		actorRepository.save(update);
 		return actor.toString();
@@ -101,6 +110,13 @@ public class MicroServiceLearningApplication {
 	public Map<String, Boolean> deleteFilm(@PathVariable("film_id") int filmID) throws ResourceNotFoundException
 	{
 		Film film = filmRepository.findById(filmID).orElseThrow( () -> new ResourceNotFoundException("Film not found for this ID :: " + filmID));
+		if (film.actors != null)
+		{
+			for (Actor a: film.actors)
+			{
+				a.films.remove(this);
+			}
+		}
 		filmRepository.delete(film);
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);
@@ -121,7 +137,7 @@ public class MicroServiceLearningApplication {
 		update.setTitle(film.title);
 		update.setDescription(film.description);
 		update.setRelease_year(film.release_year);
-		update.setLanguage_id(film.language_id);
+//		update.setLanguage_id(film.language_id);
 //		update.setOriginal_language_id(film.original_language_id);
 		update.setRental_duration(film.rental_duration);
 		update.setLength(film.length);
@@ -171,10 +187,9 @@ public class MicroServiceLearningApplication {
 	}
 
 	@PostMapping("/language")
-	String newLanguage(@RequestParam String name)
+	String newLanguage(@RequestBody Language language)
 	{
-		Language l = new Language(name);
-		languageRepository.save(l);
+		languageRepository.save(language);
 		return "Added";
 	}
 	//endregion
