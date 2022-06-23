@@ -105,14 +105,14 @@ public class MockitoTest {
         Assertions.assertEquals("Spider-Man",testFilm.get().getTitle());
         Assertions.assertEquals("Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
                 testFilm.get().getDescription());
-        Assertions.assertEquals(release, testFilm.get().release_year);
+        Assertions.assertEquals(release, testFilm.get().getRelease_year());
         Assertions.assertEquals("English", testFilm.get().getLanguage().getName());
-        Assertions.assertEquals(null, testFilm.get().original_language_id);
-        Assertions.assertEquals(0.99f, testFilm.get().rental_rate);
-        Assertions.assertEquals(121, testFilm.get().length);
-        Assertions.assertEquals(20.99f, testFilm.get().replacement_cost);
-        Assertions.assertEquals("PG-13", testFilm.get().rating);
-        Assertions.assertEquals("Deleted Scenes", testFilm.get().special_features);
+        Assertions.assertEquals(null, testFilm.get().getOriginal_language_id());
+        Assertions.assertEquals(0.99f, testFilm.get().getRental_rate());
+        Assertions.assertEquals(121, testFilm.get().getLength());
+        Assertions.assertEquals(20.99f, testFilm.get().getReplacement_cost());
+        Assertions.assertEquals("PG-13", testFilm.get().getRating());
+        Assertions.assertEquals("Deleted Scenes", testFilm.get().getSpecial_features());
     }
     @Test
     public void deleteFilm()
