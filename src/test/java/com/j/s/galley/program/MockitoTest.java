@@ -153,8 +153,12 @@ public class MockitoTest {
     {
         Date release = new Date(2002,1,1);
         Language newLanguage = new Language(0, "English");
-        return new Film("Spider-Man", "Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
+        Film film = new Film("Spider-Man", "Peter Parker's life changes when he is bitten by a genetically altered spider and gains superpowers. He uses his powers to help people and finds himself facing the Green Goblin, an evil maniac.",
                 release, newLanguage, null, 6, 0.99f, 121, 20.99f, "PG-13", "Deleted Scenes");
+        Actor a = new Actor();
+        a.films.add(film);
+        film.actors.add(a);
+        return film;
     }
     //endregion
     //region Category Tests
