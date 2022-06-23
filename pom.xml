@@ -92,6 +92,12 @@
       <artifactId>selenium-chrome-driver</artifactId>
       <version>${selenium.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>4.2.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>  
   <build> 
     <plugins> 
