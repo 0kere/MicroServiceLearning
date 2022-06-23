@@ -131,7 +131,7 @@ public class Film implements Serializable {
         return original_language_id;
     }
 
-    public void setOriginal_language_id(int original_language_id) {
+    public void setOriginal_language_id(Integer original_language_id) {
         this.original_language_id = original_language_id;
     }
 
