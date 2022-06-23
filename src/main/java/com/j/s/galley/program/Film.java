@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class Film implements Serializable {
     }, inverseJoinColumns = {
             @JoinColumn(name="actor_id", nullable = false)
     })
-    Set<Actor> actors;
+    Set<Actor> actors = new HashSet<>();
 //region Failed attempts at relationships.
 // Kept getting a SQLSyntaxErrorException. e.g. for language it was trying to do language.film for some reason. couldnt figure out why this happened
 

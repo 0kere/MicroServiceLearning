@@ -3,6 +3,7 @@ package com.j.s.galley.program;
 import org.springframework.data.annotation.Id;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 //DB Actor Class
@@ -23,7 +24,7 @@ public class Actor {
     }, inverseJoinColumns = {
             @JoinColumn(name="film_id", nullable = false)
     })
-    Set<Film> films;
+    Set<Film> films = new HashSet<>();
 
     public Actor(String firstName, String last_name)
     {
