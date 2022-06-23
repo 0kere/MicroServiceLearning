@@ -114,7 +114,7 @@ public class MicroServiceLearningApplication {
 		{
 			for (Actor a: film.actors)
 			{
-				a.films.remove(this);
+				a.films.remove(film);
 			}
 		}
 		filmRepository.delete(film);
